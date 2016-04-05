@@ -1,5 +1,5 @@
-/**@author $username$ <$usermail$>
- * @date $date$
+/**@author hoxnox <hoxnox@gmail.com>
+ * @date 20160405 11:39:23
  *
  * @brief rators test launcher.*/
 
@@ -7,6 +7,8 @@
 #include <gtest/gtest.h>
 
 // test cases
+//#include <test_ipv4_rator.hpp>
+#include "test_cidr_v4.hpp"
 
 int main(int argc, char *argv[])
 {

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#define rators_VERSION_MAJOR ${rators_VERSION_MAJOR}
-#define rators_VERSION_MINOR ${rators_VERSION_MINOR}
-#define rators_VERSION_PATCH ${rators_VERSION_PATCH}
+#define rators_VERSION_MAJOR 0
+#define rators_VERSION_MINOR 0
+#define rators_VERSION_PATCH 0
 
 namespace rators {
 

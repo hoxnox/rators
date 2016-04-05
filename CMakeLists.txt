@@ -1,5 +1,5 @@
-# @author $username$ <$usermail$>
-# @date $date$
+# @author hoxnox <hoxnox@gmail.com>
+# @date 20160405 11:39:23
 # rators cmake build script
 
 cmake_minimum_required(VERSION 2.6.4)
@@ -28,7 +28,9 @@ configure_file(
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"
                       "${PROJECT_SOURCE_DIR}/cmake/Modules")
 
+include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_SOURCE_DIR}/src")
+add_definitions("-std=c++11")
 
 ########################################################################
 # docs
@@ -50,37 +52,9 @@ endif()
 ########################################################################
 # tests
 
-function(nx_GTEST_ADD_TESTS executable extra_args)
-	foreach(source ${ARGN})
-		file(READ "${source}" contents)
-		string(REGEX MATCHALL "TEST_?F?\\(([A-Za-z_0-9 ,]+)\\)"
-			found_tests ${contents})
-		foreach(hit ${found_tests})
-			string(REGEX REPLACE ".*\\( *([A-Za-z_0-9]+), *([A-Za-z_0-9]+) *\\).*"
-			                     "\\1.\\2"
-			                     test_name ${hit})
-			add_test("${executable}-${test_name}"
-				${executable}
-				--gtest_filter=${test_name}
-				${extra_args})
-		endforeach()
-	endforeach()
-endfunction()
-
 if(WITH_TESTS)
-	set(SOURCES_TEST
-		./test/test.cpp)
-	enable_testing()
-	find_package(GTest REQUIRED)
-	include_directories(${GTEST_INCLUDE_DIRS})
-	set(TEST test_${PROJECT_NAME})
-	add_executable(${TEST} ${SOURCES_TEST})
-	if(NOT WIN32)
-		SET_TARGET_PROPERTIES(${TEST} 
-			PROPERTIES LINK_FLAGS -pthread)
-	endif(NOT WIN32)
-	target_link_libraries("${TEST}" ${GTEST_LIBRARIES} ${LIBRARIES})
-	nx_GTEST_ADD_TESTS("${TEST}" ${SOURCES_TEST})
+    enable_testing()
+    add_subdirectory(tests)
 endif()
 
 ########################################################################
