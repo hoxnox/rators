@@ -1,3 +1,4 @@
 *.swp
 *.swo
 build
+src/rators_config.h
