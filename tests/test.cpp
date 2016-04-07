@@ -7,8 +7,9 @@
 #include <gtest/gtest.h>
 
 // test cases
-//#include <test_ipv4_rator.hpp>
 #include "test_cidr_v4.hpp"
+#include "test_shuffler.hpp"
+#include "test_integers.hpp"
 
 int main(int argc, char *argv[])
 {

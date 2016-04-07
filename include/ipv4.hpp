@@ -18,8 +18,10 @@ public:
 	           SizeT mix = 0,
 	           SizeT repeat_cnt = 1);
 	SizeT size() const;
+
 	template<class InIter>
-	int blacklist_insert(InIter cidr_begin, InIter cidr_end);
+	void blacklist_insert(InIter cidr_begin, InIter cidr_end)
+		{ blacklist_.emplace(cidr_begin, cidr_end); }
 
 	class const_iterator
 	{

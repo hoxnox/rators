@@ -6,18 +6,7 @@
 
 using namespace rators;
 
-class test_cidr_v4 : public ::testing::Test
-{
-public:
-	void SetUp()
-	{
-	}
-	void TearDown()
-	{
-	}
-};
-
-TEST_F(test_cidr_v4, localhost)
+TEST(test_cidr_v4, localhost)
 {
 	cidr_v4 addr("127.0.0.5/24");
 	EXPECT_EQ(2130706437, (uint32_t)addr);
@@ -28,7 +17,7 @@ TEST_F(test_cidr_v4, localhost)
 	EXPECT_EQ("127.0.0.5/24", ss.str());
 }
 
-TEST_F(test_cidr_v4, privateB)
+TEST(test_cidr_v4, privateB)
 {
 	cidr_v4 addr("172.16.1.2/12");
 	EXPECT_EQ(2886729986, (uint32_t)addr);
@@ -39,7 +28,7 @@ TEST_F(test_cidr_v4, privateB)
 	EXPECT_EQ("172.16.1.2/12", ss.str());
 }
 
-TEST_F(test_cidr_v4, mask32)
+TEST(test_cidr_v4, mask32)
 {
 	cidr_v4 addr("213.162.1.255/32");
 	EXPECT_EQ(3584164351, (uint32_t)addr);
@@ -50,7 +39,7 @@ TEST_F(test_cidr_v4, mask32)
 	EXPECT_EQ("213.162.1.255/32", ss.str());
 }
 
-TEST_F(test_cidr_v4, operator_eq)
+TEST(test_cidr_v4, operator_eq)
 {
 	cidr_v4 a1("127.0.0.1/24");
 	cidr_v4 a2("127.0.0.2/24");
@@ -69,7 +58,7 @@ TEST_F(test_cidr_v4, operator_eq)
 	EXPECT_NE(a4, a5);
 }
 
-TEST_F(test_cidr_v4, is_net)
+TEST(test_cidr_v4, is_net)
 {
 	EXPECT_FALSE(cidr_v4("127.0.0.1/32"  ).is_net());
 	EXPECT_FALSE(cidr_v4("127.0.0.1/24"  ).is_net());
@@ -80,13 +69,13 @@ TEST_F(test_cidr_v4, is_net)
 	EXPECT_TRUE (cidr_v4("0.0.0.0/0"     ).is_net());
 }
 
-TEST_F(test_cidr_v4, net)
+TEST(test_cidr_v4, net)
 {
 	EXPECT_EQ(cidr_v4("127.0.0.0/24"), cidr_v4("127.0.0.5/24").net());
 	EXPECT_NE(cidr_v4("127.0.0.5/23").net(), cidr_v4("127.0.0.5/24").net());
 }
 
-TEST_F(test_cidr_v4, in)
+TEST(test_cidr_v4, in)
 {
 	EXPECT_TRUE (cidr_v4("127.0.0.1/24").in(cidr_v4("127.0.0.0/24")));
 	EXPECT_FALSE(cidr_v4("127.0.0.1/24").in(cidr_v4("127.0.0.2/24")));
