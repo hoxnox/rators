@@ -1,9 +1,12 @@
 /**@author hoxnox <hoxnox@gmail.com>
  * @date 20160405 11:39:23 */
 
+#pragma once
+
 #include <cstdint>
 #include <string>
 #include <algorithm>
+#include <memory>
 #include <arpa/inet.h>
 
 namespace rators {
@@ -18,6 +21,7 @@ public:
 	bool operator==(const cidr_v4& rhv) const;
 	bool operator!=(const cidr_v4& rhv) const;
 	operator uint32_t() const { return addr_; }
+	uint32_t mask() const { return 32-mask_; }
 
 	/**@brief get first address (network address) in the network*/
 	uint32_t    first() const { return (addr_>>mask_)<<mask_; }

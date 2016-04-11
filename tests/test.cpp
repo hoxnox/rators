@@ -10,6 +10,7 @@
 #include "test_cidr_v4.hpp"
 #include "test_shuffler.hpp"
 #include "test_integers.hpp"
+#include "test_lpfst.hpp"
 
 int main(int argc, char *argv[])
 {
