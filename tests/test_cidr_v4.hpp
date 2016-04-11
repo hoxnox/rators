@@ -15,6 +15,9 @@ TEST(test_cidr_v4, localhost)
 	std::stringstream ss;
 	ss << addr;
 	EXPECT_EQ("127.0.0.5/24", ss.str());
+	cidr_v4 addr1("127.0.0.5");
+	EXPECT_EQ(2130706437, (uint32_t)addr1);
+	EXPECT_EQ(32, addr1.mask());
 }
 
 TEST(test_cidr_v4, privateB)

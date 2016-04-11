@@ -13,26 +13,8 @@ template<class IntT>
 class integers
 {
 public:
+	class const_iterator;
 	integers(IntT begin, IntT end) : first_(begin), last_(end) {}
-
-	class const_iterator
-	{
-	public:
-		const_iterator(const const_iterator& copy) = default;
-		const_iterator& operator=(const const_iterator& copy) = default;
-		bool            operator==(const const_iterator& rhv) const;
-		bool            operator!=(const const_iterator& rhv) const { return !operator==(rhv); }
-		const_iterator  operator++();
-		IntT operator*() const { return curr_; }
-
-	private:
-		const_iterator() = default;
-		IntT curr_;
-		IntT last_;
-
-	friend class integers;
-	};
-
 	const_iterator begin() const;
 	const_iterator end() const;
 
@@ -42,6 +24,27 @@ private:
 
 friend class integers::const_iterator;
 };
+
+template<class IntT>
+class integers<IntT>::const_iterator
+{
+public:
+	const_iterator(const const_iterator& copy) = default;
+	const_iterator& operator=(const const_iterator& copy) = default;
+	bool            operator==(const const_iterator& rhv) const;
+	bool            operator!=(const const_iterator& rhv) const { return !operator==(rhv); }
+	const_iterator  operator++();
+	IntT operator*() const { return curr_; }
+
+private:
+	const_iterator() = default;
+	IntT curr_;
+	IntT last_;
+
+friend class integers;
+};
+
+////////////////////////////////////////////////////////////////////////
 
 template<class IntT> inline typename integers<IntT>::const_iterator
 integers<IntT>::begin() const

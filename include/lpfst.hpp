@@ -1,11 +1,15 @@
 /**@author hoxnox <hoxnox@gmail.com>
  * @date 20160411 11:31:17 */
 
+#pragma once
 #include <cidr.hpp>
 
 namespace rators {
 
-/**@brief Long prefix first search tree*/
+/**@brief Data structure allows to add some CIDR networks and check if
+ * the given address belongs to any of them.
+ *
+ * Based on Longest Prefix First Search Tree (LPFST)*/
 class lpfst
 {
 public:

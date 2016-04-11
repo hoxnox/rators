@@ -13,29 +13,9 @@ template<class FwdIterator>
 class shuffler
 {
 public:
+	class const_iterator;
 	shuffler(FwdIterator begin, FwdIterator end,
 	         bigint_t cycles_cnt = 1, bigint_t seed = 1);
-
-	class const_iterator
-	{
-	public:
-		using value_type =typename std::iterator_traits<FwdIterator>::value_type;
-		const_iterator(const const_iterator& copy) = default;
-		const_iterator& operator=(const const_iterator& copy) = default;
-		bool            operator==(const const_iterator& rhv) const;
-		bool            operator!=(const const_iterator& rhv) const { return !operator==(rhv); }
-		const_iterator  operator++();
-		value_type operator*() const { return *(parent_->it_begin_ + (state_ - 1)); }
-
-	private:
-		const_iterator() = default;
-		const shuffler* parent_{nullptr};
-		bigint_t        state_{1};
-		bigint_t        cycle_no_{0};
-
-	friend class shuffler;
-	};
-
 	const_iterator begin() const;
 	const_iterator end() const;
 	//const_itarator get(bigint_t position, bigint_t cycle_no) const;
@@ -51,8 +31,28 @@ private:
 friend class shuffler::const_iterator;
 };
 
+template<class FwdIterator>
+class shuffler<FwdIterator>::const_iterator
+{
+public:
+	using value_type =typename std::iterator_traits<FwdIterator>::value_type;
+	const_iterator(const const_iterator& copy) = default;
+	const_iterator& operator=(const const_iterator& copy) = default;
+	bool            operator==(const const_iterator& rhv) const;
+	bool            operator!=(const const_iterator& rhv) const { return !operator==(rhv); }
+	const_iterator  operator++();
+	value_type operator*() const { return *(parent_->it_begin_ + (state_ - 1)); }
+
+private:
+	const_iterator() = default;
+	const shuffler* parent_{nullptr};
+	bigint_t        state_{1};
+	bigint_t        cycle_no_{0};
+
+friend class shuffler;
+};
+
 ////////////////////////////////////////////////////////////////////////
-//
 
 const uint16_t PRIME_POLY[64] = {
 	   1, 3, 3, 3, 5, 3, 3, 29, 17, 9, 5, 83, 27, 43, 3, 45, 9, 129, 39,

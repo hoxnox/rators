@@ -38,7 +38,7 @@ public:
 
 private:
 	uint32_t addr_;
-	uint8_t  mask_;
+	uint8_t  mask_; //!< @warning it's inverted mask
 };
 
 } // namespace
@@ -63,20 +63,26 @@ cidr_v4::cidr_v4(std::string str)
 	: addr_(0)
 	, mask_(0)
 {
+	std::string addr = str;
 	const auto f = str.find('/');
 	if (f == std::string::npos)
-		return;
-	std::string addr = str.substr(0, f);
-	std::string mask = str.substr(f + 1, str.length() - f - 1);
-	if (addr.empty() || addr.size() < 7 || mask.empty() || mask.size() > 3)
-		return;
-	mask_ = static_cast<uint8_t>(std::atoi(mask.c_str()));
-	if (mask_ > 32)
 	{
 		mask_ = 0;
-		return;
 	}
-	mask_ = 32 - mask_;
+	else
+	{
+		addr = str.substr(0, f);
+		std::string mask = str.substr(f + 1, str.length() - f - 1);
+		if (addr.empty() || addr.size() < 7 || mask.empty() || mask.size() > 3)
+			return;
+		mask_ = static_cast<uint8_t>(std::atoi(mask.c_str()));
+		if (mask_ > 32)
+		{
+			mask_ = 0;
+			return;
+		}
+		mask_ = 32 - mask_;
+	}
 	if (inet_pton(AF_INET, addr.c_str(), &addr_) != 1)
 	{
 		addr_ = 0;
