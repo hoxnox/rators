@@ -21,6 +21,8 @@ public:
 	void append_to_blacklist(const cidr_v4& addr) { blacklist_.insert(addr); }
 	const_iterator begin() const;
 	const_iterator end() const;
+	const_iterator get(cidr_v4 addr) const;
+	size_t size() const { return space_.size(); }
 
 private:
 	integers<uint32_t> space_;
@@ -119,9 +121,21 @@ ipv4::end() const
 }
 
 inline ipv4::const_iterator
+ipv4::get(cidr_v4 addr) const
+{
+	const_iterator rs(space_.get((uint32_t)addr));
+	rs.parent_ = this;
+	return rs;
+}
+
+inline ipv4::const_iterator
 ipv4::const_iterator::operator++()
 {
 	++pos_;
+	if (pos_ == parent_->space_.end())
+		return pos_;
+	if (parent_->blacklist_.check({*pos_, 32}))
+		operator++();
 	return *this;
 }
 
@@ -152,7 +166,7 @@ ipv4::const_iterator::operator*()
 	if (pos_ == parent_->space_.end())
 		return cidr_v4("0.0.0.0/0");
 	cidr_v4 addr(*pos_, 32);
-	while(parent_->blacklist_.check(addr) && pos_ != parent_->space_.end())
+	if (parent_->blacklist_.check(addr))
 	{
 		operator++();
 		addr = cidr_v4(*pos_, 32);

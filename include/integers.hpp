@@ -17,6 +17,8 @@ public:
 	integers(IntT begin, IntT end) : first_(begin), last_(end) {}
 	const_iterator begin() const;
 	const_iterator end() const;
+	const_iterator get(IntT value) const;
+	size_t size() const { return last_ < first_ ? 0 : last_ - first_ + 1; }
 
 private:
 	IntT first_;
@@ -62,6 +64,17 @@ integers<IntT>::end() const
 	end.curr_ = 0;
 	end.last_ = 0;
 	return end;
+}
+
+template<class IntT> inline typename integers<IntT>::const_iterator
+integers<IntT>::get(IntT val) const
+{
+	if (val < first_ || val > last_)
+		return end();
+	const_iterator rs;
+	rs.curr_ = val;
+	rs.last_ = last_;
+	return rs;
 }
 
 template<class IntT> inline typename integers<IntT>::const_iterator
