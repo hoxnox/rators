@@ -39,6 +39,20 @@ TEST(test_ipv4, get)
 	ASSERT_EQ(cidr_v4("23.16.4.64/32"), cidr_v4(j, 32));
 }
 
+TEST(test_ipv4, operator_ppn)
+{
+	ipv4 addrs({"3.0.0.0/8"});
+	ASSERT_EQ(0xffffff, addrs.size());
+	auto pos = addrs.begin();
+	EXPECT_EQ(cidr_v4("3.0.0.1"), *pos);
+	pos += 4;
+	EXPECT_EQ(cidr_v4("3.0.0.5"), *pos);
+	pos += 250;
+	EXPECT_EQ(cidr_v4("3.0.0.255"), *pos);
+	pos += 1;
+	EXPECT_EQ(cidr_v4("3.0.1.0"), *pos);
+}
+
 TEST(test_ipv4, cidr_with_blacklist)
 {
 	ipv4 addrs({"222.0.0.0/24"});

@@ -35,3 +35,16 @@ TEST(test_integers, get)
 	ASSERT_EQ(v, 100);
 }
 
+TEST(test_integers, operator_ppn)
+{
+	auto ints = integers<uint8_t>(0, 99);
+	ASSERT_EQ(100, ints.size());
+	auto pos = ints.begin();
+	pos += 10;
+	EXPECT_EQ(10, *pos);
+	pos += 5;
+	EXPECT_EQ(15, *pos);
+	pos += 100;
+	EXPECT_EQ(ints.end(), pos);
+}
+

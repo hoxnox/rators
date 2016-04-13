@@ -36,6 +36,8 @@ public:
 	bool            operator==(const const_iterator& rhv) const;
 	bool            operator!=(const const_iterator& rhv) const { return !operator==(rhv); }
 	const_iterator  operator++();
+	const_iterator  operator++(int);
+	const_iterator  operator+=(int n);
 	IntT operator*() const { return curr_; }
 
 private:
@@ -93,6 +95,33 @@ integers<IntT>::const_iterator::operator++()
 		return *this;
 	}
 	++curr_;
+	return *this;
+}
+
+template<class IntT> inline typename integers<IntT>::const_iterator
+integers<IntT>::const_iterator::operator++(int)
+{
+	const_iterator prev = *this;
+	operator++();
+	return prev;
+}
+
+template<class IntT> inline typename integers<IntT>::const_iterator
+integers<IntT>::const_iterator::operator+=(int n)
+{
+	if (last_ == 0)
+	{
+		curr_ = 0;
+		last_ = 0;
+		return *this;
+	}
+	if (curr_ + n >= last_)
+	{
+		curr_ = 0;
+		last_ = 0;
+		return *this;
+	}
+	curr_ += n;
 	return *this;
 }
 

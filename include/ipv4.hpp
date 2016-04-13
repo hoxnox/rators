@@ -38,8 +38,9 @@ public:
 	const_iterator& operator=(const const_iterator& copy) = default;
 	bool            operator==(const const_iterator& rhv) const;
 	bool            operator!=(const const_iterator& rhv) const;
-	const_iterator  operator++(int n);
+	const_iterator  operator++(int);
 	const_iterator  operator++();
+	const_iterator operator+=(int n);
 	cidr_v4         operator*();
 
 private:
@@ -140,12 +141,21 @@ ipv4::const_iterator::operator++()
 }
 
 inline ipv4::const_iterator
-ipv4::const_iterator::operator++(int n)
+ipv4::const_iterator::operator++(int)
 {
 	const_iterator prev = *this;
-	for (size_t i = 0; i <= n; ++i)
-		operator++();
+	operator++();
 	return prev;
+}
+
+inline ipv4::const_iterator
+ipv4::const_iterator::operator+=(int n)
+{
+	if (pos_ == parent_->space_.end())
+		return pos_;
+	pos_ += n - 1;
+	operator++();
+	return *this;
 }
 
 inline bool
