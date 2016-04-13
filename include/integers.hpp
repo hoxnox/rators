@@ -28,7 +28,8 @@ friend class integers::const_iterator;
 };
 
 template<class IntT>
-class integers<IntT>::const_iterator
+class integers<IntT>::const_iterator 
+	: public std::iterator<std::input_iterator_tag, IntT, IntT>
 {
 public:
 	const_iterator(const const_iterator& copy) = default;
@@ -38,6 +39,7 @@ public:
 	const_iterator  operator++();
 	const_iterator  operator++(int);
 	const_iterator  operator+=(int n);
+	const_iterator  operator+(IntT n);
 	IntT operator*() const { return curr_; }
 
 private:
@@ -109,20 +111,27 @@ integers<IntT>::const_iterator::operator++(int)
 template<class IntT> inline typename integers<IntT>::const_iterator
 integers<IntT>::const_iterator::operator+=(int n)
 {
-	if (last_ == 0)
+	return *this = *this + n;
+}
+
+template<class IntT> inline typename integers<IntT>::const_iterator
+integers<IntT>::const_iterator::operator+(IntT n)
+{
+	const_iterator rs(*this);
+	if (rs.last_ == 0)
 	{
-		curr_ = 0;
-		last_ = 0;
+		rs.curr_ = 0;
+		rs.last_ = 0;
 		return *this;
 	}
-	if (curr_ + n >= last_)
+	if (rs.curr_ + n >= rs.last_)
 	{
-		curr_ = 0;
-		last_ = 0;
+		rs.curr_ = 0;
+		rs.last_ = 0;
 		return *this;
 	}
-	curr_ += n;
-	return *this;
+	rs.curr_ += n;
+	return rs;
 }
 
 template<class IntT> inline bool

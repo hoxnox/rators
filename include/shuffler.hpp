@@ -20,6 +20,7 @@ public:
 	const_iterator end() const;
 	//const_itarator get(bigint_t position, bigint_t cycle_no) const;
 	const_iterator get_by_state(bigint_t state, bigint_t cycle_no) const;
+	const bigint_t size() const {return size_;}
 
 private:
 	bigint_t    seed_{0};
@@ -41,7 +42,12 @@ public:
 	bool            operator==(const const_iterator& rhv) const;
 	bool            operator!=(const const_iterator& rhv) const { return !operator==(rhv); }
 	const_iterator  operator++();
-	value_type operator*() const { return *(parent_->it_begin_ + (state_ - 1)); }
+	value_type operator*() const
+	{
+		FwdIterator cpy = parent_->it_begin_;
+		cpy+=(state_-1);
+		return *cpy;
+	}
 
 private:
 	const_iterator() = default;
@@ -96,7 +102,7 @@ template<class FwdIterator>
 shuffler<FwdIterator>::shuffler(FwdIterator begin, FwdIterator end,
                                 bigint_t cycles_cnt, bigint_t seed)
 	: seed_(seed == 0 ? 1 : seed)
-	, size_(static_cast<bigint_t>(end - begin))
+	, size_(static_cast<bigint_t>(std::distance(begin, end)))
 	, pow2_approx_(get_pow2_approx(size_))
 	, cycles_cnt_(cycles_cnt)
 	, it_begin_(begin)

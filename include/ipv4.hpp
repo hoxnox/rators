@@ -32,6 +32,7 @@ friend class ipv4::const_iterator;
 };
 
 class ipv4::const_iterator
+	: public std::iterator<std::input_iterator_tag, cidr_v4, uint32_t>
 {
 public:
 	const_iterator(const const_iterator& copy) = default;
@@ -41,6 +42,7 @@ public:
 	const_iterator  operator++(int);
 	const_iterator  operator++();
 	const_iterator operator+=(int n);
+	const_iterator  operator+(uint32_t n);
 	cidr_v4         operator*();
 
 private:
@@ -151,11 +153,18 @@ ipv4::const_iterator::operator++(int)
 inline ipv4::const_iterator
 ipv4::const_iterator::operator+=(int n)
 {
-	if (pos_ == parent_->space_.end())
-		return pos_;
-	pos_ += n - 1;
-	operator++();
-	return *this;
+	return *this = *this + n;
+}
+
+inline ipv4::const_iterator
+ipv4::const_iterator::operator+(uint32_t n)
+{
+	const_iterator rs(*this);
+	if (rs.pos_ == parent_->space_.end())
+		return rs.pos_;
+	rs.pos_ += n - 1;
+	rs.operator++();
+	return rs;
 }
 
 inline bool

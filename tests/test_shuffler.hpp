@@ -11,6 +11,7 @@ TEST(test_shuffler, int_1_100)
 		ints[i] = i;
 	uint8_t produced_ints[100] = {0};
 	auto sh = shuffler<uint8_t*>(ints, ints + 100);
+	ASSERT_EQ(sh.size(), 100);
 	uint8_t counter = 0;
 	for (const auto& i : sh)
 		produced_ints[counter++] = i;

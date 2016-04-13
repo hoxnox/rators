@@ -12,6 +12,7 @@
 #include "test_integers.hpp"
 #include "test_ipv4.hpp"
 #include "test_lpfst.hpp"
+#include "test_shufipv4.hpp"
 
 int main(int argc, char *argv[])
 {
