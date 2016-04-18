@@ -18,6 +18,8 @@ public:
 	static ipv4 internet();
 	ipv4(cidr_v4 addr);
 	ipv4(cidr_v4 begin, cidr_v4 end);
+	/**@warning blacklist usage can cause iterator problems:
+	 * (a+n)+k != a+(n+k)*/
 	void append_to_blacklist(const cidr_v4& addr) { blacklist_.insert(addr); }
 	const_iterator begin() const;
 	const_iterator end() const;

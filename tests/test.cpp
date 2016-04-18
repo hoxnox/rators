@@ -13,6 +13,8 @@
 #include "test_ipv4.hpp"
 #include "test_lpfst.hpp"
 #include "test_shufipv4.hpp"
+#include "test_math.hpp"
+#include "test_cyclic_group.hpp"
 
 int main(int argc, char *argv[])
 {
