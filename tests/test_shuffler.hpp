@@ -36,3 +36,20 @@ TEST(test_shuffler, uint16)
 		ASSERT_EQ(i, produced_ints[i]);
 }
 
+TEST(test_shuffler, int_1_100_cycle_3)
+{
+	uint8_t ints[100];
+	for (uint8_t i = 0; i < 100; ++i)
+		ints[i] = i;
+	std::vector<uint8_t> produced_ints;
+	auto sh = shuffler<uint8_t*>(ints, ints + 100, 3);
+	ASSERT_EQ(300, sh.size());
+	uint8_t counter = 0;
+	for (const auto& i : sh)
+		produced_ints.emplace_back(i);
+	ASSERT_EQ(300, produced_ints.size());
+	std::sort(produced_ints.begin(), produced_ints.end());
+	for (uint16_t i = 0; i < 300; ++i)
+		ASSERT_EQ(i/3, produced_ints[i]);
+}
+

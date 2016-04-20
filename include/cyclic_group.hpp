@@ -28,6 +28,7 @@ public:
 	class const_iterator;
 	const_iterator begin() const;
 	const_iterator end() const;
+	const_iterator get_by_state(const std::array<bigint_t, N>& state) const;
 
 	/**@brief total elements in the group*/
 	bigint_t size() const;
@@ -75,6 +76,18 @@ cyclic_group<N>::begin() const
 	rs.curr_pos_ = 0;
 	rs.curr_ = seed_;
 	rs.owner_ = this;
+	return rs;
+}
+
+template<std::size_t N> inline typename cyclic_group<N>::const_iterator
+cyclic_group<N>::get_by_state(const std::array<bigint_t, N>& state) const
+{
+	const_iterator rs;
+	if (!contains(state))
+		return end();
+	rs = begin();
+	while (rs.curr_ != state)
+		++rs;
 	return rs;
 }
 

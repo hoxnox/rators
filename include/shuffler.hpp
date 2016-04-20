@@ -20,7 +20,7 @@ public:
 	const_iterator end() const;
 	//const_itarator get(bigint_t position, bigint_t cycle_no) const;
 	const_iterator get_by_state(bigint_t state, bigint_t cycle_no) const;
-	const bigint_t size() const {return size_;}
+	const bigint_t size() const {return size_*cycles_cnt_;}
 
 private:
 	bigint_t    seed_{0};
@@ -34,14 +34,18 @@ friend class shuffler::const_iterator;
 
 template<class FwdIterator>
 class shuffler<FwdIterator>::const_iterator
+	: public std::iterator<std::input_iterator_tag, typename std::iterator_traits<FwdIterator>::value_type, bigint_t>
 {
 public:
+	const_iterator() {}
 	using value_type =typename std::iterator_traits<FwdIterator>::value_type;
 	const_iterator(const const_iterator& copy) = default;
 	const_iterator& operator=(const const_iterator& copy) = default;
 	bool            operator==(const const_iterator& rhv) const;
 	bool            operator!=(const const_iterator& rhv) const { return !operator==(rhv); }
 	const_iterator  operator++();
+	const_iterator  operator+=(int n);
+	const_iterator  operator+(int n);
 	value_type operator*() const
 	{
 		FwdIterator cpy = parent_->it_begin_;
@@ -50,7 +54,6 @@ public:
 	}
 
 private:
-	const_iterator() = default;
 	const shuffler* parent_{nullptr};
 	bigint_t        state_{1};
 	bigint_t        cycle_no_{0};
@@ -165,6 +168,26 @@ shuffler<FwdIterator>::const_iterator::operator++()
 	if (cycle_no_ >= parent_->cycles_cnt_)
 		operator=(parent_->end());
 	return *this;
+}
+
+template<class FwdIterator> inline typename shuffler<FwdIterator>::const_iterator
+shuffler<FwdIterator>::const_iterator::operator+(int n)
+{
+	const_iterator rs(*this);
+	for (int i = 0; i < n; ++i)
+	{
+		
+		if (rs == parent_->end())
+			return rs;
+		++rs;
+	}
+	return rs;
+}
+
+template<class FwdIterator> inline typename shuffler<FwdIterator>::const_iterator
+shuffler<FwdIterator>::const_iterator::operator+=(int n)
+{
+	return *this = *this + n;
 }
 
 template<class FwdIterator> inline bool
