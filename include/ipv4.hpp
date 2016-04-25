@@ -34,23 +34,24 @@ friend class ipv4::const_iterator;
 };
 
 class ipv4::const_iterator
-	: public std::iterator<std::input_iterator_tag, cidr_v4, uint32_t>
+	: public std::iterator<std::input_iterator_tag, std::string, uint32_t>
 {
 public:
+	const_iterator() {}
 	const_iterator(const const_iterator& copy) = default;
 	const_iterator& operator=(const const_iterator& copy) = default;
 	bool            operator==(const const_iterator& rhv) const;
 	bool            operator!=(const const_iterator& rhv) const;
 	const_iterator  operator++(int);
 	const_iterator  operator++();
-	const_iterator operator+=(int n);
+	const_iterator  operator+=(int n);
 	const_iterator  operator+(uint32_t n);
-	cidr_v4         operator*();
+	std::string     operator*();
 
 private:
 	const_iterator(const integers<uint32_t>::const_iterator& pos) : pos_(pos) {}
 	integers<uint32_t>::const_iterator pos_;
-	const ipv4*                        parent_;
+	const ipv4*                        parent_{nullptr};
 
 friend class ipv4;
 };
@@ -181,11 +182,11 @@ ipv4::const_iterator::operator!=(const ipv4::const_iterator& rhv) const
 	return !operator==(rhv);
 }
 
-inline cidr_v4
+inline std::string
 ipv4::const_iterator::operator*()
 {
 	if (pos_ == parent_->space_.end())
-		return cidr_v4("0.0.0.0/0");
+		return std::string();
 	cidr_v4 addr(*pos_, 32);
 	if (parent_->blacklist_.check(addr))
 	{
@@ -193,8 +194,8 @@ ipv4::const_iterator::operator*()
 		addr = cidr_v4(*pos_, 32);
 	}
 	if (pos_ == parent_->space_.end())
-		return cidr_v4("0.0.0.0/0");
-	return addr;
+		return std::string();
+	return addr.str(true);
 }
 
 } // namespace

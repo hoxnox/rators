@@ -14,6 +14,7 @@ namespace rators {
 class cidr_v4
 {
 public:
+	cidr_v4() {}
 	cidr_v4(std::string str);
 	cidr_v4(uint32_t addr, uint8_t mask) : addr_(addr), mask_(32-mask) {}
 	~cidr_v4() = default;
@@ -34,11 +35,11 @@ public:
 	/**@brief get network address*/
 	cidr_v4     net() const { return cidr_v4((addr_>>mask_)<<mask_, 32-mask_); }
 	/**@brief convert to string*/
-	std::string str() const;
+	std::string str(bool nomask = false) const;
 
 private:
-	uint32_t addr_;
-	uint8_t  mask_; //!< @warning it's inverted mask
+	uint32_t addr_{0};
+	uint8_t  mask_{0}; //!< @warning it's inverted mask
 };
 
 } // namespace
@@ -92,12 +93,14 @@ cidr_v4::cidr_v4(std::string str)
 }
 
 inline std::string
-cidr_v4::str() const
+cidr_v4::str(bool nomask) const
 {
 	char tmp[20];
 	uint32_t addr = htonl(addr_);
 	if (inet_ntop(AF_INET, &addr, tmp, sizeof(tmp)) == NULL)
 		return std::string();
+	if (nomask)
+		return tmp;
 	std::stringstream ss;
 	ss << tmp << "/" << 32-mask_;
 	return ss.str();

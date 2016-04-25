@@ -66,6 +66,25 @@ TEST_F(test_mixed_product, shuffler)
 	ASSERT_EQ(etalon, product);
 }
 
+namespace std {
+	ostream& operator<<(ostream& os, const std::array<std::string, 2>& val)
+	{
+		os << "{" << val[0] << ", " << val[1] << "}";
+		return os;
+	}
+} // namespace
+
+TEST_F(test_mixed_product, ipv4)
+{
+	ipv4 ipr1({"192.168.10.1"}, {"192.168.10.10"});
+	ipv4 ipr2({"127.0.0.1"}, {"127.0.0.10"});
+	using ip_mixer = mixed_product<typename ipv4::const_iterator, 2>;
+	auto mixer = ip_mixer({ip_mixer::range_t(ipr1.begin(), ipr1.end()),
+	                       ip_mixer::range_t(ipr2.begin(), ipr2.end())});
+	for (const auto& i : mixer)
+		std::cout << i << std::endl;
+}
+
 std::vector<std::string> test_mixed_product::veg({"potato", "carrot", "tomato", "pumpkin"});
 std::vector<std::string> test_mixed_product::fru({"apple", "banana", "peach", "orange", "cocos", "grenade"});
 std::vector<std::string> test_mixed_product::act({"boil", "fry", "dry"});

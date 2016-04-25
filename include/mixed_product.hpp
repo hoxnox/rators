@@ -47,8 +47,9 @@ public:
 	bool                operator!=(const const_iterator& rhv) const {return !operator==(rhv);}
 	const_iterator      operator++(int);
 	const_iterator      operator++();
-	std::array<ObjT, N> operator*() const;
+	std::array<ObjT, N> operator*();
 private:
+	bigint_t distance(Iter a, Iter b) { return static_cast<bigint_t>(std::distance(a, b)); }
 	const_iterator(const mixed_product<Iter, N>& owner);
 	const mixed_product<Iter, N>*            owner_;
 	typename cyclic_group<N>::const_iterator curr_pos_;
@@ -65,8 +66,7 @@ mixed_product<Iter, N>::mixed_product(const std::array<range_t, N>&& inputs,
 {
 	for (size_t i = 0; i < N; ++i)
 	{
-		sizes_[i] = static_cast<bigint_t>(std::distance(inputs[i].begin,
-		                                  inputs[i].end));
+		sizes_[i] = distance(inputs[i].begin, inputs[i].end);
 	}
 	selector_.reset(new cyclic_group<N>(sizes_, mix_seed));
 }
@@ -151,7 +151,7 @@ mixed_product<Iter, N>::const_iterator::operator==(const const_iterator& rhv) co
 }
 
 template<class Iter, std::size_t N> typename std::array<typename mixed_product<Iter, N>::ObjT, N>
-mixed_product<Iter, N>::const_iterator::operator*() const
+mixed_product<Iter, N>::const_iterator::operator*()
 {
 	std::array<bigint_t, N> pos = *curr_pos_;
 	std::array<typename mixed_product<Iter, N>::ObjT, N> rs;

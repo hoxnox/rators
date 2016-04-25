@@ -32,6 +32,7 @@ class integers<IntT>::const_iterator
 	: public std::iterator<std::input_iterator_tag, IntT, IntT>
 {
 public:
+	const_iterator() {}
 	const_iterator(const const_iterator& copy) = default;
 	const_iterator& operator=(const const_iterator& copy) = default;
 	bool            operator==(const const_iterator& rhv) const;
@@ -43,9 +44,8 @@ public:
 	IntT operator*() const { return curr_; }
 
 private:
-	const_iterator() = default;
-	IntT curr_;
-	IntT last_;
+	IntT curr_{0};
+	IntT last_{0};
 
 friend class integers;
 };
