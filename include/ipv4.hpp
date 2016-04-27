@@ -15,12 +15,8 @@ class ipv4
 {
 public:
 	class const_iterator;
-	static ipv4 internet();
 	ipv4(cidr_v4 addr);
 	ipv4(cidr_v4 begin, cidr_v4 end);
-	/**@warning blacklist usage can cause iterator problems:
-	 * (a+n)+k != a+(n+k)*/
-	void append_to_blacklist(const cidr_v4& addr) { blacklist_.insert(addr); }
 	const_iterator begin() const;
 	const_iterator end() const;
 	const_iterator get(cidr_v4 addr) const;
@@ -28,7 +24,6 @@ public:
 
 private:
 	integers<uint32_t> space_;
-	lpfst   blacklist_;
 
 friend class ipv4::const_iterator;
 };
@@ -46,7 +41,14 @@ public:
 	const_iterator  operator++();
 	const_iterator  operator+=(int n);
 	const_iterator  operator+(uint32_t n);
-	std::string     operator*();
+	std::string     operator*() const;
+	uint32_t        distance(const const_iterator& rhv) const
+	{
+		if (parent_ && parent_ == rhv.parent_)
+			return pos_.distance(rhv.pos_);
+		std::cout << "Nooooo" << std::endl;
+		return 0;
+	}
 
 private:
 	const_iterator(const integers<uint32_t>::const_iterator& pos) : pos_(pos) {}
@@ -74,40 +76,6 @@ ipv4::ipv4(cidr_v4 addr)
 ipv4::ipv4(cidr_v4 begin, cidr_v4 end)
 	: space_((uint32_t)begin, (uint32_t)end)
 {
-}
-
-ipv4 ipv4::internet()
-{
-	ipv4 result({"1.0.0.1"}, {"223.255.255.255"});
-	// RFC-1122: This host on this network
-	result.append_to_blacklist({"0.0.0.0/8"});
-	// RFC-6598: Shared address space
-	result.append_to_blacklist({"100.64.0.0/10"});
-	// RFC-3927: Link local
-	result.append_to_blacklist({"169.254.0.0/16"});
-	// RFC-1918: Private use
-	result.append_to_blacklist({"10.0.0.0/8"});
-	// RFC-1918: Private use
-	result.append_to_blacklist({"172.16.0.0/12"});
-	// RFC-6890: IETF Protocol Assignments
-	result.append_to_blacklist({"192.0.0.0/24"});
-	// RFC-5737: Documentation (TEST-NET-1)
-	result.append_to_blacklist({"192.0.2.0/24"});
-	// RFC-3068: 6to4 Relay Anycast
-	result.append_to_blacklist({"192.88.99.0/24"});
-	// RFC-1918: Private-Use
-	result.append_to_blacklist({"192.168.0.0/16"});
-	// RFC-2544: Benchmarking
-	result.append_to_blacklist({"192.18.0.0/15"});
-	// RFC-5737: Documentation (TEST-NET-2)
-	result.append_to_blacklist({"198.51.100.0/24"});
-	// RFC-5737: Documentation (TEST-NET-3)
-	result.append_to_blacklist({"203.0.113.0/24"});
-	// RFC-1112: Reserved
-	result.append_to_blacklist({"240.0.0.0/4"});
-	// RFC-0919: Limited Broadcast
-	result.append_to_blacklist({"255.255.255.255/32"});
-	return result;
 }
 
 inline ipv4::const_iterator
@@ -140,8 +108,6 @@ ipv4::const_iterator::operator++()
 	++pos_;
 	if (pos_ == parent_->space_.end())
 		return pos_;
-	if (parent_->blacklist_.check({*pos_, 32}))
-		operator++();
 	return *this;
 }
 
@@ -183,19 +149,24 @@ ipv4::const_iterator::operator!=(const ipv4::const_iterator& rhv) const
 }
 
 inline std::string
-ipv4::const_iterator::operator*()
+ipv4::const_iterator::operator*() const
 {
 	if (pos_ == parent_->space_.end())
 		return std::string();
 	cidr_v4 addr(*pos_, 32);
-	if (parent_->blacklist_.check(addr))
-	{
-		operator++();
-		addr = cidr_v4(*pos_, 32);
-	}
 	if (pos_ == parent_->space_.end())
 		return std::string();
 	return addr.str(true);
+}
+
+} // namespace
+
+namespace std {
+
+typename iterator_traits<rators::ipv4::const_iterator>::difference_type
+distance (const rators::ipv4::const_iterator& first, const rators::ipv4::const_iterator& last)
+{
+	return first.distance(last);
 }
 
 } // namespace

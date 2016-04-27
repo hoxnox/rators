@@ -15,6 +15,7 @@
 #include "test_shufipv4.hpp"
 #include "test_math.hpp"
 #include "test_cyclic_group.hpp"
+#include "test_lines.hpp"
 #include "test_mixed_product.hpp"
 
 int main(int argc, char *argv[])

@@ -41,9 +41,21 @@ public:
 	const_iterator  operator++(int);
 	const_iterator  operator+=(int n);
 	const_iterator  operator+(IntT n);
-	IntT operator*() const { return curr_; }
+	IntT            operator*() const { return curr_; }
+	IntT            distance(const const_iterator& rhv) const
+	{
+		if (is_end)
+			return 0;
+		if (curr_ <= rhv.curr_ && rhv.is_end)
+			return rhv.curr_ - curr_ + 1;
+		if (curr_ < rhv.curr_)
+			return rhv.curr_ - curr_;
+		std::cout << "Fuuuuu" << std::endl;
+		return 0;
+	}
 
 private:
+	bool is_end{false};
 	IntT curr_{0};
 	IntT last_{0};
 
@@ -65,8 +77,9 @@ template<class IntT> inline typename integers<IntT>::const_iterator
 integers<IntT>::end() const
 {
 	const_iterator end;
-	end.curr_ = 0;
-	end.last_ = 0;
+	end.curr_ = last_;
+	end.last_ = last_;
+	end.is_end = true;
 	return end;
 }
 
@@ -92,8 +105,8 @@ integers<IntT>::const_iterator::operator++()
 	}
 	if (curr_ >= last_)
 	{
-		curr_ = 0;
-		last_ = 0;
+		curr_ = last_;
+		is_end = true;
 		return *this;
 	}
 	++curr_;
@@ -126,8 +139,9 @@ integers<IntT>::const_iterator::operator+(IntT n)
 	}
 	if (rs.curr_ + n >= rs.last_)
 	{
-		rs.curr_ = 0;
-		rs.last_ = 0;
+		rs.curr_ = last_;
+		rs.last_ = last_;
+		rs.is_end = true;
 		return *this;
 	}
 	rs.curr_ += n;
@@ -137,7 +151,7 @@ integers<IntT>::const_iterator::operator+(IntT n)
 template<class IntT> inline bool
 integers<IntT>::const_iterator::operator==(const const_iterator& rhv) const
 {
-	return  curr_ == rhv.curr_ && last_ == rhv.last_;
+	return  curr_ == rhv.curr_ && last_ == rhv.last_ && is_end == rhv.is_end;
 }
 
 } // namespace

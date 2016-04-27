@@ -4,6 +4,7 @@
 #include <mixed_product.hpp>
 #include <shuffler.hpp>
 #include <unordered_set>
+#include <lines.hpp>
 
 using namespace rators;
 
@@ -77,12 +78,127 @@ namespace std {
 TEST_F(test_mixed_product, ipv4)
 {
 	ipv4 ipr1({"192.168.10.1"}, {"192.168.10.10"});
-	ipv4 ipr2({"127.0.0.1"}, {"127.0.0.10"});
+	ASSERT_EQ(10, std::distance(ipr1.begin(), ipr1.end()));
+	ipv4 ipr2({"127.0.255.253"}, {"127.1.0.2"});
+	ASSERT_EQ(6, std::distance(ipr2.begin(), ipr2.end()));
 	using ip_mixer = mixed_product<typename ipv4::const_iterator, 2>;
 	auto mixer = ip_mixer({ip_mixer::range_t(ipr1.begin(), ipr1.end()),
 	                       ip_mixer::range_t(ipr2.begin(), ipr2.end())});
+	std::stringstream ss;
 	for (const auto& i : mixer)
+		ss << i;
+	ASSERT_EQ("{192.168.10.4, 127.1.0.1}"
+	          "{192.168.10.5, 127.1.0.2}"
+	          "{192.168.10.6, 127.0.255.253}"
+	          "{192.168.10.7, 127.0.255.254}"
+	          "{192.168.10.8, 127.0.255.255}"
+	          "{192.168.10.9, 127.1.0.0}"
+	          "{192.168.10.10, 127.1.0.1}"
+	          "{192.168.10.1, 127.0.255.253}"
+	          "{192.168.10.2, 127.0.255.254}"
+	          "{192.168.10.3, 127.0.255.255}"
+	          "{192.168.10.4, 127.1.0.0}"
+	          "{192.168.10.5, 127.1.0.1}"
+	          "{192.168.10.6, 127.1.0.2}"
+	          "{192.168.10.7, 127.0.255.253}"
+	          "{192.168.10.8, 127.0.255.254}"
+	          "{192.168.10.9, 127.0.255.255}"
+	          "{192.168.10.10, 127.1.0.0}"
+	          "{192.168.10.1, 127.1.0.2}"
+	          "{192.168.10.2, 127.0.255.253}"
+	          "{192.168.10.3, 127.0.255.254}"
+	          "{192.168.10.4, 127.0.255.255}"
+	          "{192.168.10.5, 127.1.0.0}"
+	          "{192.168.10.6, 127.1.0.1}"
+	          "{192.168.10.7, 127.1.0.2}"
+	          "{192.168.10.8, 127.0.255.253}"
+	          "{192.168.10.9, 127.0.255.254}"
+	          "{192.168.10.10, 127.0.255.255}"
+	          "{192.168.10.1, 127.1.0.1}"
+	          "{192.168.10.2, 127.1.0.2}"
+	          "{192.168.10.3, 127.0.255.253}"
+	          "{192.168.10.4, 127.0.255.254}"
+	          "{192.168.10.5, 127.0.255.255}"
+	          "{192.168.10.6, 127.1.0.0}"
+	          "{192.168.10.7, 127.1.0.1}"
+	          "{192.168.10.8, 127.1.0.2}"
+	          "{192.168.10.9, 127.0.255.253}"
+	          "{192.168.10.10, 127.0.255.254}"
+	          "{192.168.10.1, 127.1.0.0}"
+	          "{192.168.10.2, 127.1.0.1}"
+	          "{192.168.10.3, 127.1.0.2}"
+	          "{192.168.10.4, 127.0.255.253}"
+	          "{192.168.10.5, 127.0.255.254}"
+	          "{192.168.10.6, 127.0.255.255}"
+	          "{192.168.10.7, 127.1.0.0}"
+	          "{192.168.10.8, 127.1.0.1}"
+	          "{192.168.10.9, 127.1.0.2}"
+	          "{192.168.10.10, 127.0.255.253}"
+	          "{192.168.10.1, 127.0.255.255}"
+	          "{192.168.10.2, 127.1.0.0}"
+	          "{192.168.10.3, 127.1.0.1}"
+	          "{192.168.10.4, 127.1.0.2}"
+	          "{192.168.10.5, 127.0.255.253}"
+	          "{192.168.10.6, 127.0.255.254}"
+	          "{192.168.10.7, 127.0.255.255}"
+	          "{192.168.10.8, 127.1.0.0}"
+	          "{192.168.10.9, 127.1.0.1}"
+	          "{192.168.10.10, 127.1.0.2}"
+	          "{192.168.10.1, 127.0.255.254}"
+	          "{192.168.10.2, 127.0.255.255}"
+	          "{192.168.10.3, 127.1.0.0}", ss.str());
+}
+
+TEST_F(test_mixed_product, big_ipv4)
+{
+	ipv4 ipr1({"1.0.0.1"}, {"223.255.255.255"});
+	ASSERT_EQ(3741319167, std::distance(ipr1.begin(), ipr1.end()));
+	using ip_mixer = mixed_product<typename ipv4::const_iterator, 1>;
+	auto mixer = ip_mixer({ip_mixer::range_t(ipr1.begin(), ipr1.end())});
+	//ASSERT_EQ(1, mixer.size());
+}
+
+TEST_F(test_mixed_product, lines)
+{
+	const std::string filename_tpl{"/tmp/rators_test_XXXXXX"};
+	std::unique_ptr<char>(file1name);
+	std::unique_ptr<char>(file2name);
+	std::stringstream file1content;
+	std::stringstream file2content;
+	file1name.reset(new char[filename_tpl.length()]);
+	file2name.reset(new char[filename_tpl.length()]);
+	std::copy(filename_tpl.begin(), filename_tpl.end(), file1name.get());
+	std::copy(filename_tpl.begin(), filename_tpl.end(), file2name.get());
+	file1content << std::endl << "file1 line2"
+	             << std::endl << "file1 line3"
+	             << std::endl << "file1 line4"
+	             << std::endl
+	             << std::endl << "file1 line6"
+	             << std::endl << "file1 line7";
+	file2content << std::endl << "file2 line1"
+	             << std::endl << "line2 line2";
+	int fd1 = mkstemp(file1name.get());
+	int fd2 = mkstemp(file2name.get());
+	ASSERT_NE(-1, fd1);
+	ASSERT_NE(-1, fd2);
+	ASSERT_EQ(file1content.str().length(),
+		write(fd, file1content.str().c_str(), file1content.str().length()));
+	ASSERT_EQ(file2content.str().length(),
+		write(fd, file2content.str().c_str(), file2content.str().length()));
+	close(fd1);
+	close(fd2);
+
+	lines f1(file1name.get(), 7);
+	lines f2(file2name.get(), 2);
+	ASSERT_EQ(7, std::distance(f1.begin(), f1.end()));
+	ASSERT_EQ(2, std::distance(f1.begin(), f2.end()));
+	using ip_mixer = mixed_product<typename lines::const_iterator, 2>;
+	auto mixer = ip_mixer({ip_mixer::range_t(f1.begin(), f1.end()),
+	                       ip_mixer::range_t(f2.begin(), f2.end())});
+	for (auto i : mixer)
 		std::cout << i << std::endl;
+	remove(file1name.get());
+	remove(file2name.get());
 }
 
 std::vector<std::string> test_mixed_product::veg({"potato", "carrot", "tomato", "pumpkin"});
