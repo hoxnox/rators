@@ -182,9 +182,9 @@ TEST_F(test_mixed_product, lines)
 	ASSERT_NE(-1, fd1);
 	ASSERT_NE(-1, fd2);
 	ASSERT_EQ(file1content.str().length(),
-		write(fd, file1content.str().c_str(), file1content.str().length()));
+		write(fd1, file1content.str().c_str(), file1content.str().length()));
 	ASSERT_EQ(file2content.str().length(),
-		write(fd, file2content.str().c_str(), file2content.str().length()));
+		write(fd2, file2content.str().c_str(), file2content.str().length()));
 	close(fd1);
 	close(fd2);
 
@@ -192,13 +192,29 @@ TEST_F(test_mixed_product, lines)
 	lines f2(file2name.get(), 2);
 	ASSERT_EQ(7, std::distance(f1.begin(), f1.end()));
 	ASSERT_EQ(2, std::distance(f1.begin(), f2.end()));
-	using ip_mixer = mixed_product<typename lines::const_iterator, 2>;
-	auto mixer = ip_mixer({ip_mixer::range_t(f1.begin(), f1.end()),
-	                       ip_mixer::range_t(f2.begin(), f2.end())});
+	using mixer_t = mixed_product<typename lines::const_iterator, 2>;
+	auto mixer = mixer_t({mixer_t::range_t(f1.begin(), f1.end()),
+	                      mixer_t::range_t(f2.begin(), f2.end())});
+	std::stringstream ss;
 	for (auto i : mixer)
-		std::cout << i << std::endl;
+		ss << i << std::endl;
 	remove(file1name.get());
 	remove(file2name.get());
+	ASSERT_EQ("{, }\n"
+	          "{file1 line6, file2 line1}\n"
+	          "{file1 line7, }\n"
+	          "{, file2 line1}\n"
+	          "{file1 line2, }\n"
+	          "{file1 line3, file2 line1}\n"
+	          "{file1 line4, }\n"
+	          "{, file2 line1}\n"
+	          "{file1 line6, }\n"
+	          "{file1 line7, file2 line1}\n"
+	          "{, }\n"
+	          "{file1 line2, file2 line1}\n"
+	          "{file1 line3, }\n"
+	          "{file1 line4, file2 line1}\n"
+		, ss.str());
 }
 
 std::vector<std::string> test_mixed_product::veg({"potato", "carrot", "tomato", "pumpkin"});
